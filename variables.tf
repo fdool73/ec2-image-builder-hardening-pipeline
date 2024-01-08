@@ -3,8 +3,8 @@
 ###################################
 variable "image_name" {
   type        = string
-  description = "Enter the container's name."
-  default     = "linux-baseline"
+  description = "Image name"
+  default     = "amazon-linux-2-baseline"
 
   validation {
     condition     = can(regex("[a-zA-Z0-9-]{3,50}", var.image_name))
@@ -14,43 +14,43 @@ variable "image_name" {
 
 variable "recipe_version" {
   type        = string
-  description = "Enter the image recipe version. Example: 1.0.0"
+  description = "Image recipe version. Example: 1.0.0"
 }
 
 variable "account_id" {
   type        = string
-  description = "Enter the account number that you wish to deploy in."
+  description = "AWS account number"
 }
 
 variable "aws_region" {
   type        = string
-  default     = "us-east-1"
-  description = "Enter the AWS Region you wish to deploy in."
+  default     = "us-west-2"
+  description = "AWS Region to deploy in"
 }
 
 variable "vpc_name" {
   type        = string
-  description = "Enter the name for your VPC infrastructure"
+  description = "Name for the VPC"
 }
 
 variable "ec2_iam_role_name" {
   type        = string
-  description = "Enter the name for the role that will be used as the EC2 Instance Profile."
+  description = "Name for the EC2 Instance Profile role"
 }
 
 variable "hardening_pipeline_role_name" {
   type        = string
-  description = "Enter the name for the role that will be used to deploy the hardening Pipeline."
+  description = "Name for the role that will be used to deploy the hardening Pipeline"
 }
 
 variable "ecr_name" {
   type        = string
-  description = "Enter the name for Elastic Container Registry to store the container images."
+  description = "Name for ECR repo"
 }
 
 variable "aws_s3_ami_resources_bucket" {
   type        = string
-  description = "Enter the name for an S3 Bucket that will host all files necessary to build the pipeline and container images."
+  description = "Name for pipeline and container images S3 Bucket"
   validation {
     condition     = substr(var.aws_s3_ami_resources_bucket, 0, 1) != "/" && substr(var.aws_s3_ami_resources_bucket, -1, 1) != "/" && length(var.aws_s3_ami_resources_bucket) > 0
     error_message = "Parameter `aws_s3_ami_resources_bucket` cannot start and end with \"/\", as well as cannot be empty."
@@ -59,10 +59,10 @@ variable "aws_s3_ami_resources_bucket" {
 
 variable "ebs_root_vol_size" {
   type        = number
-  description = "Enter the size (in gigabytes) of the EBS Root Volume."
+  description = "Size (in gigabytes) of the EBS Root Volume"
 }
 
 variable "kms_key_alias" {
   type        = string
-  description = "Enter the KMS Key name to be used by the image builder infrastructure configuration."
+  description = "KMS Key name "
 }

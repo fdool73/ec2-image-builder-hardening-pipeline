@@ -15,7 +15,6 @@ resource "aws_ecr_repository" "hardening_pipeline_repo" {
 }
 
 resource "aws_imagebuilder_distribution_configuration" "this" {
-  # Modify this name if desired
   name = "local-distribution"
 
   distribution {
