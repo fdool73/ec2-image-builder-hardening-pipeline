@@ -126,11 +126,11 @@ resource "aws_s3_bucket_versioning" "s3_pipeline_bucket_version" {
 
 resource "aws_imagebuilder_image_pipeline" "this" {
   container_recipe_arn             = aws_imagebuilder_container_recipe.container_image.arn
-  infrastructure_configuration_arn = aws_imagebuilder_infrastructure_configuration.this.arn
+  infrastructure_configuration_arn = aws_imagebuilder_infrastructure_configuration.image_hardening.arn
   name                             = var.image_name
   status                           = "ENABLED"
   description                      = "Creates images."
-  distribution_configuration_arn   = aws_imagebuilder_distribution_configuration.this.arn
+  distribution_configuration_arn   = aws_imagebuilder_distribution_configuration.container_image_distribution_config.arn
 
   schedule {
     # This cron schedule is for every Friday at 6 AM, modify it for your purposes.
@@ -149,7 +149,7 @@ resource "aws_imagebuilder_image_pipeline" "this" {
   depends_on = [
     aws_imagebuilder_container_recipe.container_image,
     aws_imagebuilder_infrastructure_configuration.this,
-    aws_imagebuilder_distribution_configuration.this,
+    aws_imagebuilder_distribution_configuration.container_image_distribution_config,
   ]
 
   lifecycle {

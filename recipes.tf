@@ -26,7 +26,7 @@ resource "aws_imagebuilder_container_recipe" "container_image" {
         volume_size           = var.ebs_root_vol_size
         volume_type           = "gp2"
         encrypted             = true
-        kms_key_id            = aws_kms_key.this.arn
+        kms_key_id            = aws_kms_key.encryption_key.arn
       }
     }
 

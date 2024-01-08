@@ -1,4 +1,4 @@
-data "aws_iam_policy_document" "this" {
+data "aws_iam_policy_document" "encryption_key" {
   statement {
     sid       = "Enable IAM User Permissions"
     effect    = "Allow"
@@ -72,17 +72,17 @@ data "aws_iam_policy_document" "this" {
 }
 
 # Creates and manages KMS CMK
-resource "aws_kms_key" "this" {
+resource "aws_kms_key" "encryption_key" {
   description             = "EC2 Image Builder key"
   is_enabled              = true
   enable_key_rotation     = true
   tags                    = local.core_tags
-  policy                  = data.aws_iam_policy_document.this.json
+  policy                  = data.aws_iam_policy_document.encryption_key.json
   deletion_window_in_days = 30
 }
 
 # Add an alias to the key
-resource "aws_kms_alias" "this" {
+resource "aws_kms_alias" "encryption_key" {
   name          = "alias/${var.kms_key_alias}"
-  target_key_id = aws_kms_key.this.key_id
+  target_key_id = aws_kms_key.encryption_key.key_id
 }

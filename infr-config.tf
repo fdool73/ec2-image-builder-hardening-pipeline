@@ -1,4 +1,4 @@
-resource "aws_imagebuilder_infrastructure_configuration" "this" {
+resource "aws_imagebuilder_infrastructure_configuration" "image_hardening" {
   description                   = "Container Image Infrastructure configuration"
   instance_profile_name         = var.ec2_iam_role_name
   instance_types                = ["t3.micro"]

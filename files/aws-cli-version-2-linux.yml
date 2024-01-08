@@ -1,0 +1,97 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+name: AWS CLI version 2
+description: Installs the latest version of the AWS CLI version 2, and creates the symlink /usr/bin/aws that points to the installed application. For more information, see https://docs.aws.amazon.com/cli/latest/userguide/.
+schemaVersion: 1.0
+
+constants:
+  - fail:
+      type: string
+      value: "1"
+
+phases:
+  - name: build
+    steps:
+      - name: OperatingSystemRelease
+        action: ExecuteBash
+        inputs:
+          commands:
+            - |
+              FILE=/etc/os-release
+              if [ -e $FILE ]; then
+                . $FILE
+                echo "$ID${VERSION_ID:+.${VERSION_ID}}"
+              else
+                echo "The file $FILE does not exist. Failing build."
+                exit {{ fail }}
+              fi
+
+      - name: InstallationRequirements
+        action: ExecuteBash
+        inputs:
+          commands:
+            - |
+              function install_if_not_exists() {
+                if [ `which $1 2> /dev/null` ]; then
+                  echo "$1 already exists; skipping install."
+                elif [ `which apt 2> /dev/null` ]; then
+                  sudo apt install  --quiet -y $1
+                elif [ `which yum 2> /dev/null` ]; then
+                  sudo yum install --quiet -y $1
+                elif [ `which zypper 2> /dev/null` ]; then
+                  sudo zypper --quiet install -y $1
+                fi
+              }
+              install_if_not_exists curl
+              install_if_not_exists unzip
+
+      - name: InstallationType
+        action: ExecuteBash
+        inputs:
+          commands:
+            - |
+              BINARY=/usr/local/aws-cli/v2/current/bin/aws
+              if [ -x $BINARY ]; then
+                  echo 'update'
+              else
+                  echo 'install'
+              fi
+
+      - name: OperatingSystemArchitecture
+        action: ExecuteBash
+        inputs:
+          commands:
+            - |
+              ARCH=$(uname -m)
+              if [ `echo $ARCH | grep -Ev '^(aarch64|x86_64)'` ]; then
+                echo "The '$ARCH' architecture is not supported. Failing build."
+                exit {{ fail }}
+              fi
+              echo $ARCH
+
+      - name: Source
+        action: ExecuteBash
+        inputs:
+          commands:
+            - ARCH='{{ build.OperatingSystemArchitecture.outputs.stdout }}'
+            - echo "https://awscli.amazonaws.com/awscli-exe-linux-$ARCH.zip"
+
+      - name: ZipFile
+        action: ExecuteBash
+        inputs:
+          commands:
+            - echo $HOME/awscliv2.zip
+
+      - name: Download
+        action: ExecuteBash
+        inputs:
+          commands:
+            - |
+              URL='{{ build.Source.outputs.stdout }}'
+              ZIP='{{ build.ZipFile.outputs.stdout }}'
+              echo "Downloading '$URL' to '$ZIP'"
+              curl -s $URL -o $ZIP
+
+      - name: ExtractPath
+        action: ExecuteBash
+        inputs:
